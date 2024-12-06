@@ -201,3 +201,19 @@ function renderStudentAsHTML(studentAsJSON) {
          <button onclick ="handleDeleteStudentEvent(event)">Delete Student</button>
     </div>`;
 }
+async function handleShowStudentDetailsEvent(event) {
+    console.log(`handleShowStudentDetailsEvent - START`);
+    console.log(`event = ${event}`);
+    console.log({event});
+
+    const studentId = event.target.parentElement.getAttribute("data-id");
+    let studentAsJSON = await getStudent(studentId);
+    console.log({studentAsJSON});
+
+    if (studentAsJSON == null) {
+        div_show_student_details.innerHTML = `<p class ="failure">ERROR: failed to get student with id ${studentId}</p>`;
+    } else {
+        displayStudentDetails(studentAsJSON);
+    }
+    console.log(`handleShowStudentDetailsEvent - END`);
+}
