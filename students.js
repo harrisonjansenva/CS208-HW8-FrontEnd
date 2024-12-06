@@ -46,6 +46,8 @@ async function getAndDisplayAllStudents() {
     }
     console.log(`getAndDisplayAllStudents - END`);
 }
+
+
 async function createNewStudent(studentData) {
     const API_URL = 'http://localhost:8080/students';
     try {
@@ -72,4 +74,40 @@ async function createNewStudent(studentData) {
         console.error(error);
         div_create_new_student.innerHTML = `<p class="failure">ERROR: failed to connect to API to create new student.</p>`;
     }
+}
+
+async function getStudent(studentId) {
+    console.log(`getStudent(${studentId}) - START`);
+    console.log(`studentId = ${studentId}`);
+
+    const API_URL = "http://localhost:8080/students/" + studentId;
+
+    console.log(`Calling the API to get the student with id ${studentId}`);
+
+    try {
+        const response = await fetch(API_URL);
+
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok) {
+            console.log("Retrieved the student successfully, now we just need to process it...");
+
+            const studentAsJSON = await response.json();
+            console.log({studentAsJSON});
+
+            return studentAsJSON;
+        } else {
+            console.log(`ERROR: could not retrieve student with id ${studentId}`);
+        }
+
+    } catch (error) {
+        console.error(error);
+        console.log(`ERROR: couldn't connect to API to get student with id ${studentId}`);
+
+    }
+    console.log(`getStudent(${studentId}) - END`);
+    return null;
 }
