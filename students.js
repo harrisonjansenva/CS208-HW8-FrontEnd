@@ -187,3 +187,17 @@ function displayStudents(listOfStudentsAsJSON) {
         div_list_of_students.innerHTML += renderStudentAsHTML(studentAsJSON)
     }
 }
+
+function renderStudentAsHTML(studentAsJSON) {
+    return `<div class ="show-student-in-list" data-id ="${studentAsJSON.id}">
+        <p>Student ID (for debugging): ${studentAsJSON.id}</p>
+        <p>Student First Name: ${studentAsJSON.firstName}</p>
+        <p>Student Last Name: ${studentAsJSON.lastName}</p>
+        <p>Student Birthday: ${studentAsJSON.birthDate}</p>
+        <p></p>
+    
+         <button onclick ="handleShowStudentDetailsEvent(event)">Show Student Details</button>
+         <button onclick ="handleUpdateStudentDetailsEvent(event)">Update Student Details</button>
+         <button onclick ="handleDeleteStudentEvent(event)">Delete Student</button>
+    </div>`;
+}
