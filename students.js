@@ -111,3 +111,31 @@ async function getStudent(studentId) {
     console.log(`getStudent(${studentId}) - END`);
     return null;
 }
+
+async function updateStudent(studentData) {
+    const API_URL = `http://localhost:8080/students/${studentData.id}`;
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams(studentData)
+        });
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok) {
+            div_update_student_details.innerHTML = `<p class ="success"> Student updated successfully.</p>`;
+            await getAndDisplayAllStudents();
+        } else {
+            div_update_student_details.innerHTML = `<p class ="failure">ERROR: could not update student.</p>`;
+        }
+    } catch (error) {
+        console.error(error);
+        div_update_student_details.innerHTML = `<p class ="failure">ERROR: API call to update student with id ${studentData.id} failed.</p>`;
+    }
+}
