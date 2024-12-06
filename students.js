@@ -217,3 +217,56 @@ async function handleShowStudentDetailsEvent(event) {
     }
     console.log(`handleShowStudentDetailsEvent - END`);
 }
+function displayStudentDetails(studentAsJSON) {
+    console.log({studentAsJSON});
+    div_show_student_details.innerHTML = `<div class ="show-student-details" data-id ="${studentAsJSON.id}">
+        <p>Student ID (for debugging): ${studentAsJSON.id}</p>
+        <p>Name: ${studentAsJSON.firstName} ${studentAsJSON.lastName}</p>
+        <p>Birthday: ${studentAsJSON.birthDate}</p>
+      </div>`;
+}
+async function handleUpdateStudentDetailsEvent(event){
+    console.log(`handleUpdateStudentDetailsEvent - START`);
+    console.log(`event = ${event}`);
+    console.log(`${event}`);
+
+    const studentId = event.target.parentElement.getAttribute("data-id");
+    const studentAsJSON = await getStudent(studentId);
+    console.log({studentAsJSON});
+
+    div_update_student_details.innerHTML =
+        `<form id="id_form_update_student_details">
+        <input type="hidden" name="id" value="${studentAsJSON.id}">
+        
+        <label for ="update_firstName">First Name:</label>
+        <input type ="text" name ="firstName" id="update_firstName" value =${studentAsJSON.firstName} required>
+        <br>
+        
+        <label for ="update_lastName">Last Name:</label>
+        <input type ="text" name ="lastName" id="update_lastName" value =${studentAsJSON.lastName} required>
+        <br>
+        
+        <label for="update_birthDate"> BirthDate:</label>
+        <input type ="date" name ="birthDate" id ="update_birthDate" value =${studentAsJSON.birthDate} required>
+        <br>
+        
+        <button type ="submit">Update student details</button>
+        </form>`;
+    const idFormUpdateStudentDetailsElement = document.getElementById("id_form_update_student_details");
+    idFormUpdateStudentDetailsElement.addEventListener("submit", function(event)
+        {
+            event.preventDefault();
+
+            const formData = new FormData(idFormUpdateStudentDetailsElement);
+            const studentData = {
+                id: formData.get("id"),
+                firstName: formData.get("firstName"),
+                lastName: formData.get("lastName"),
+                birthDate: formData.get("birthDate")
+
+            };
+            console.log({studentData});
+            updateStudent(studentData);
+        });
+    console.log(`handleUpdateStudentDetailsEvent - END`);
+}
