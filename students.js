@@ -270,3 +270,12 @@ async function handleUpdateStudentDetailsEvent(event){
         });
     console.log(`handleUpdateStudentDetailsEvent - END`);
 }
+async function handleDeleteStudentEvent(event) {
+    console.log(`handleDeleteStudentEvent - START`);
+    console.log(`event = ${event}`);
+    console.log({event});
+
+    const studentId = event.target.parentElement.getAttribute("data-id");
+    await deleteStudent(studentId);
+    console.log(`handleDeleteStudentEvent - END`);
+}
