@@ -139,3 +139,29 @@ async function updateStudent(studentData) {
         div_update_student_details.innerHTML = `<p class ="failure">ERROR: API call to update student with id ${studentData.id} failed.</p>`;
     }
 }
+
+async function deleteStudent(studentId) {
+    const API_URL = `http://localhost:8080/students/${studentId}`;
+
+    try {
+        const response = await fetch(API_URL, {method: "DELETE"});
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok) {
+            div_delete_student.innerHTML = `<p class="success">Class with id ${studentId} deleted successfully</p>`;
+            await getAndDisplayAllStudents();
+        } else {
+            div_delete_student.innerHTML = `<p class="failure">ERROR: failed to delete the class with id ${studentId}</p>`;
+        }
+    } catch (error) {
+        console.error(error);
+        div_delete_class.innerHTML = `<p class="failure">ERROR: failed to connect to the API to delete the student with id ${studentId}</p>`;
+    }
+}
+
+// =====================================================================================================================
+// Functions that update the HTML by manipulating the DOM
+// =====================================================================================================================
