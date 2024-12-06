@@ -165,3 +165,25 @@ async function deleteStudent(studentId) {
 // =====================================================================================================================
 // Functions that update the HTML by manipulating the DOM
 // =====================================================================================================================
+async function handleCreateNewStudentEvent(event) {
+
+    event.preventDefault();
+
+    const formData = new FormData(id_form_create_new_student);
+    const studentData = {
+        firstName: formData.get("firstName"),
+        lastName: formData.get("lastName"),
+        birthDate: formData.get("birthDate")
+    };
+    console.log({studentData});
+    await createNewStudent(studentData);
+}
+
+function displayStudents(listOfStudentsAsJSON) {
+    div_list_of_students.innerHTML = '';
+
+    for (const studentAsJSON of listOfStudentsAsJSON) {
+        console.log({studentAsJSON});
+        div_list_of_students.innerHTML += renderStudentAsHTML(studentAsJSON)
+    }
+}
