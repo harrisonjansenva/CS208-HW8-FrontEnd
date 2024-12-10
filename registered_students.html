@@ -17,7 +17,11 @@
 <hr>
 
 <h2>List all registered students</h2>
+<div id="list_of_registered_students">
+    The list of registered students will be shown here...
+</div>
 
+<div id="register_student_feedback"></div>
 <hr>
 
 <h2>Add a new student to a class</h2>
@@ -50,6 +54,17 @@
 <hr>
 
 <h2>Drop an existing student from a class</h2>
+    <div id="drop_student_feedback"></div>
+        <form id="id_form_drop_student_from_class" action="http://localhost:8080/drop_student_from_class" method="delete">
+            <label for="selectRegisteredStudentToDrop">Select a student to drop:</label>
+            <select name="registeredStudentId" id="selectRegisteredStudentToDrop">
+                <option value="" disabled selected>Select a student</option>
+            </select>
+            <br>
+            <button type="submit">Drop student from class</button>
+        </form>
+
+<hr>
 
 <hr>
 
