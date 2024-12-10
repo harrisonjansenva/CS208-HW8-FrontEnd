@@ -219,3 +219,75 @@ async function handleRegisterStudentEvent(event) {
 
     console.log('handleRegisterStudentEvent - END');
 }
+document.addEventListener(`DOMContentLoaded`, getAllRegisteredStudentsAndRefreshTheDropStudentDropdown)
+async function getAllRegisteredStudentsAndRefreshTheDropStudentDropdown() {
+    console.log(`getAllRegisteredStudentsAndRefreshTheDropStudentDropdown- START`);
+
+    const API_URL = `http://localhost:8080/registered_students`;
+    const selectStudentToDrop = document.getElementById("id_form_drop_student_from_class");
+    try {
+        const response = await fetch(API_URL);
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok) {
+            const listOfRegisteredStudentsAsJSON = await response.json();
+            console.log({listOfRegisteredStudentsAsJSON});
+
+            refreshTheSelectStudentToDropDropdown(listOfRegisteredStudentsAsJSON);
+        } else {
+            console.log("ERROR: couldn't load students from API.");
+            while (selectStudentToDrop.firstChild) {
+                selectStudentToDrop.removeChild(selectStudentToDrop.firstChild);
+            }
+
+            const option = document.createElement("option");
+            option.value = "";
+            option.text = "ERROR: Students could not be loaded.";
+            option.disabled = true;
+            option.selected = true;
+            selectStudentToDrop.appendChild(option);
+        }
+
+    } catch (error) {
+        console.error(error);
+        while (selectStudentToDrop.firstChild) {
+            selectStudentToDrop.removeChild(selectStudentToDrop.firstChild);
+        }
+
+        const option = document.createElement("option");
+        option.value = "";
+        option.text = "ERROR: Students could not be loaded.";
+        option.disabled = true;
+        option.selected = true;
+        selectStudentForEnrollment.appendChild(option);
+    }
+    console.log(`getAllRegisteredStudentsAndRefreshTheDropStudentDropdown - END`);
+}
+ function refreshTheSelectStudentToDropDropdown(listOfRegisteredStudentsAsJSON) {
+         const selectStudentToDrop = document.getElementById("selectRegisteredStudentToDrop");
+
+         // delete all existing options (i.e., children) of the selectClassForEnrollment
+         while (selectStudentToDrop.firstChild) {
+             selectStudentToDrop.removeChild(selectStudentToDrop.firstChild);
+         }
+
+         const option = document.createElement("option");
+         option.value = "";
+         option.text = "Select a student";
+         option.disabled = true;
+         option.selected = true;
+         selectClassForEnrollment.appendChild(option);
+
+         for (const studentAsJSON of listOfRegisteredStudentsAsJSON) {
+             const option = document.createElement("option");
+             option.value = `${studentAsJSON.studentId}:${studentAsJSON.classId}`;
+             option.text = `${studentAsJSON.studentFullName} - ${studentAsJSON.code} ${studentAsJSON.title}`;
+
+             selectStudentToDrop.appendChild(option);
+         }
+}
+const id_form_drop_student_from_class = document.getElementById("id_form_drop_student_from_class");
+id_form_drop_student_from_class.addEventListener(`submit`, handleDropStudentEvent);
