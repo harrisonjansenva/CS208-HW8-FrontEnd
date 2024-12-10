@@ -107,3 +107,115 @@ async function getAllStudentsAndRefreshTheSelectClassForEnrollmentDropdown() {
     }
     console.log(`getAllStudentsAndRefreshTheSelectClassForEnrollmentDropdown - END`);
 }
+
+function refreshTheSelectStudentForEnrollmentDropdown(listOfStudentsAsJSON) {
+    const selectStudentForEnrollment = document.getElementById("selectStudentForEnrollment");
+
+    while (selectStudentForEnrollment.firstChild) {
+        selectStudentForEnrollment.removeChild(selectStudentForEnrollment.firstChild);
+    }
+
+    const option = document.createElement("option");
+    option.value = "";
+    option.text = "Select a student:";
+    option.disabled = true;
+    option.selected = true;
+    selectStudentForEnrollment.appendChild(option);
+
+    for (const studentAsJSON of listOfStudentsAsJSON) {
+        const option = document.createElement("option");
+        option.value = studentAsJSON.id;
+        option.text = studentAsJSON.firstName + " " + studentAsJSON.lastName;
+
+        selectStudentForEnrollment.appendChild(option);
+    }
+}
+const id_form_register_student_to_class = document.getElementById(`id_form_add_new_student_to_a_class`) ;
+id_form_register_student_to_class.addEventListener(`submit`, handleRegisterStudentEvent);
+
+
+async function getAndDisplayAllRegisteredStudents() {
+    console.log('getAndDisplayAllRegisteredStudents - START');
+    const API_URL = `http://localhost:8080/registered_students`;
+    const div_list_of_registered_students = document.getElementById("list_of_registered_students");
+
+    div_list_of_registered_students.innerHTML = "Fetching registered students...";
+
+    try {
+        const response = await fetch(API_URL);
+        console.log({response});
+        if (response.ok) {
+            const registeredStudents = await response.json();
+            console.log({registeredStudents});
+
+           await displayRegisteredStudents(registeredStudents);
+        } else {
+            div_list_of_registered_students.innerHTML = `<p class="failure">ERROR: Failed to fetch registered students.</p>`;
+        }
+    } catch (error) {
+        console.error(error);
+        div_list_of_registered_students.innerHTML = `<p class="failure">ERROR: Unable to connect to the API.</p>`;
+    }
+
+    console.log('getAndDisplayAllRegisteredStudents - END');
+}
+
+
+
+async function displayRegisteredStudents(registeredStudents) {
+    const div_list_of_registered_students = document.getElementById("list_of_registered_students");
+    div_list_of_registered_students.innerHTML = "Loading registered students...";
+
+    try {
+        div_list_of_registered_students.innerHTML = "";
+        for (const student of registeredStudents) {
+            div_list_of_registered_students.innerHTML += `
+            <div class="registered-student">
+                <p>Student: ${student.studentId} - ${student.studentFullName}</p>
+                <p>Class: ${student.code} - ${student.title}</p>
+                <br>
+            </div>
+        `;
+        }
+    } catch (error) {
+        console.error("Error loading registered students:", error);
+        div_list_of_registered_students.innerHTML = `<p class="failure">Failed to load registered students.</p>`;
+    }
+}
+async function handleRegisterStudentEvent(event) {
+    console.log('handleRegisterStudentEvent - START');
+    event.preventDefault();
+
+    const formData = new FormData(id_form_register_student_to_class);
+    const studentClassData = {
+        studentID: formData.get("studentId"),
+        classID: formData.get("classId")
+    };
+
+    const API_URL = `http://localhost:8080/add_student_to_class`;
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams(studentClassData)
+        });
+        console.log({response});
+        if (response.ok) {
+            const result = await response.json();
+            console.log({result});
+
+            document.getElementById("register_student_feedback").innerHTML = `<p class="success">Student successfully registered to the class.</p>`;
+            await getAndDisplayAllRegisteredStudents();
+        } else {
+            document.getElementById("register_student_feedback").innerHTML = `<p class="failure">ERROR: Failed to register the student.</p>`;
+        }
+    } catch (error) {
+        console.error(error);
+        document.getElementById("register_student_feedback").innerHTML = `<p class="failure">ERROR: Unable to connect to the API.</p>`;
+    }
+
+    console.log('handleRegisterStudentEvent - END');
+}
