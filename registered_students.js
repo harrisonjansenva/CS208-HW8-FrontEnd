@@ -35,13 +35,11 @@ async function getAllClassesAndRefreshTheSelectClassForEnrollmentDropdown() {
 }
 
 
-function refreshTheSelectClassForEnrollmentDropdown(listOfClassesAsJSON)
-{
+function refreshTheSelectClassForEnrollmentDropdown(listOfClassesAsJSON) {
     const selectClassForEnrollment = document.getElementById("selectClassForEnrollment");
 
     // delete all existing options (i.e., children) of the selectClassForEnrollment
-    while (selectClassForEnrollment.firstChild)
-    {
+    while (selectClassForEnrollment.firstChild) {
         selectClassForEnrollment.removeChild(selectClassForEnrollment.firstChild);
     }
 
@@ -52,12 +50,60 @@ function refreshTheSelectClassForEnrollmentDropdown(listOfClassesAsJSON)
     option.selected = true;
     selectClassForEnrollment.appendChild(option);
 
-    for (const classAsJSON of listOfClassesAsJSON)
-    {
+    for (const classAsJSON of listOfClassesAsJSON) {
         const option = document.createElement("option");
         option.value = classAsJSON.id;                              // this is the value that will be sent to the server
         option.text = classAsJSON.code + ": " + classAsJSON.title;  // this is the value the user chooses from the dropdown
 
         selectClassForEnrollment.appendChild(option);
     }
+}
+
+addEventListener('DOMContentLoaded', getAllStudentsAndRefreshTheSelectClassForEnrollmentDropdown);
+
+async function getAllStudentsAndRefreshTheSelectClassForEnrollmentDropdown() {
+    console.log(`getAllStudentsAndRefreshTheSelectClassForEnrollmentDropdown - START`);
+
+    const API_URL = `http://localhost:8080/students`;
+    const selectStudentForEnrollment = document.getElementById("selectStudentForEnrollment");
+    try {
+        const response = await fetch(API_URL);
+        console.log({response});
+        console.log(`response.status = ${response.status}`);
+        console.log(`response.statusText = ${response.statusText}`);
+        console.log(`response.ok = ${response.ok}`);
+
+        if (response.ok) {
+            const listOfStudentsAsJSON = await response.json();
+            console.log({listOfStudentsAsJSON});
+
+            refreshTheSelectStudentForEnrollmentDropdown(listOfStudentsAsJSON);
+        } else {
+            console.log("ERROR: couldn't load students from API.");
+            while (selectStudentForEnrollment.firstChild) {
+                selectStudentForEnrollment.removeChild(selectStudentForEnrollment.firstChild);
+            }
+
+            const option = document.createElement("option");
+            option.value = "";
+            option.text = "ERROR: Students could not be loaded.";
+            option.disabled = true;
+            option.selected = true;
+            selectStudentForEnrollment.appendChild(option);
+        }
+
+    } catch (error) {
+        console.error(error);
+        while (selectStudentForEnrollment.firstChild) {
+            selectStudentForEnrollment.removeChild(selectStudentForEnrollment.firstChild);
+        }
+
+        const option = document.createElement("option");
+        option.value = "";
+        option.text = "ERROR: Students could not be loaded.";
+        option.disabled = true;
+        option.selected = true;
+        selectStudentForEnrollment.appendChild(option);
+    }
+    console.log(`getAllStudentsAndRefreshTheSelectClassForEnrollmentDropdown - END`);
 }
