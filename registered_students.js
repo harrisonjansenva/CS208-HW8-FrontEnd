@@ -291,3 +291,43 @@ async function getAllRegisteredStudentsAndRefreshTheDropStudentDropdown() {
 }
 const id_form_drop_student_from_class = document.getElementById("id_form_drop_student_from_class");
 id_form_drop_student_from_class.addEventListener(`submit`, handleDropStudentEvent);
+
+async function handleDropStudentEvent(event) {
+    console.log("handleDropStudentEvent - START");
+    event.preventDefault();
+
+    const formData = new FormData(id_form_drop_student_from_class);
+    const selectedValue = formData.get("registeredStudentId");
+
+    if (!selectedValue) {
+        console.error("No student selected for dropping.");
+        return;
+    }
+
+    // Split the combined value into studentID and classID
+    const [studentID, classID] = selectedValue.split(":");
+
+    const API_URL = `http://localhost:8080/drop_student_from_class?studentID=${studentID}&classID=${classID}`;
+    console.log(`Student ID: ${studentID} Class ID: ${classID}`);
+    try {
+        const response = await fetch(API_URL, {
+            method: "DELETE"
+        });
+        console.log({response});
+
+        if (response.ok) {
+            document.getElementById("drop_student_feedback").innerHTML = `<p class="success">Student successfully dropped from the class.</p>`;
+            await getAllRegisteredStudentsAndRefreshTheDropStudentDropdown(); // Refresh the list
+        } else {
+            document.getElementById("drop_student_feedback").innerHTML = `<p class="failure">ERROR: Failed to drop the student from class.</p>`;
+        }
+    } catch (error) {
+        console.error(error);
+        document.getElementById("drop_student_feedback").innerHTML = `<p class="failure">ERROR: Unable to connect to the API.</p>`;
+    }
+
+    console.log("handleDropStudentEvent - END");
+    // refreshTheSelectStudentToDropDropdown();
+}
+
+
