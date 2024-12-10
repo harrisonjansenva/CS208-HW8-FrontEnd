@@ -1,35 +1,32 @@
 console.log('registered_students.js is executing...');
 
 addEventListener('DOMContentLoaded', getAllClassesAndRefreshTheSelectClassForEnrollmentDropdown);
+document.addEventListener("DOMContentLoaded", async () => {
+    await getAndDisplayAllRegisteredStudents();
+});
 
-async function getAllClassesAndRefreshTheSelectClassForEnrollmentDropdown()
-{
+async function getAllClassesAndRefreshTheSelectClassForEnrollmentDropdown() {
     console.log('getAllClassesAndRefreshTheSelectClassForEnrollmentDropdown - START');
 
     const API_URL = "http://localhost:8080/classes";
 
-    try
-    {
+    try {
         const response = await fetch(API_URL);
         console.log({response});
         console.log(`response.status = ${response.status}`);
         console.log(`response.statusText = ${response.statusText}`);
         console.log(`response.ok = ${response.ok}`);
 
-        if (response.ok)
-        {
+        if (response.ok) {
             const listOfClassesAsJSON = await response.json();
             console.log({listOfClassesAsJSON});
 
             refreshTheSelectClassForEnrollmentDropdown(listOfClassesAsJSON);
-        }
-        else
-        {
+        } else {
             // TODO: update the HTML with information that we failed to retrieve the classes
+
         }
-    }
-    catch (error)
-    {
+    } catch (error) {
         console.error(error);
         // TODO: update the HTML with information that we failed to connect to the API to fetch the classes data
     }
